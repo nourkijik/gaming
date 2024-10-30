@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Game</title>
+  <style >
+   
+   body {
+     background-image  : url(ll.jpg) ;
+     background-size: cover;
+     background-repeat: no-repeat ;
+     background-position: center;
+      font-family: Arial, sans-serif;
+    }
+    div {
+    box-shadow: 10px 10px #6d588e, 20px 20px #405378;
+}
+
+    .container {
+      max-width: 600px;
+      margin: 36px auto;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: rgb(220, 178, 237);
+      border-radius: 30px;
+    }
+
+    input[type="text"] {
+      padding: 11px;
+      font-size: 19px;
+      margin-top: 20px;
+      width: 300px;
+      box-sizing: border-box;
+    }
+
+    input[type="number"] {
+      padding: 11px;
+      font-size: 19px;
+      margin-top: 20px;
+      width: 300px;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 30px;
+      background-color: #d38cf1;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 8px;
+      text-align: center;
+      border-bottom: 1px solid #dfacf5;
+    }
+
+    tr:hover {
+      background-color: #f5f5f5;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    button:hover {
+      background-color: #dfacf5;
+    }
+
+    .numbers {
+      display: none;
+      font-size: 24px;
+      margin-top: 20px;
+    }
+
+    #userGuess {
+      margin-top: 20px;
+      display: none; 
+    }
+
+    .tabs {
+      overflow: hidden;
+      border-bottom: 1px solid #dfacf5;
+    }
+
+    .logo{
+width: 60px;
+height: 60px;
+border-radius: 50%;
+position: absolute;
+top: 10px;
+right: 10px;
+object-fit: cover;
+
+    }
+    .tablinks {
+      background-color: #ce97df;
+      float: calc();
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 14px 16px;
+      transition: background-color 0,25ms;
+    }
+
+    .tablinks:hover {
+      background-color: #c85fe9;
+    }
+
+    .tabcontent {
+      display: none;
+      padding: 50px;
+    }
+
+    .tabcontent h3 {
+      color: #000000;
+    }
+ 
+  </style>
+</head>
+<body>
+
+  <img class="logo" src="logo .jpg" >
+
+  
+<div class="tabs">
+  <button class="tablinks" onclick="openTab(event, 'home')">الصفحة الرئيسية</button>
+  <button class="tablinks" onclick="openTab(event, 'statistics')">الإحصائيات</button>
+  <button class="tablinks" onclick="openTab(event, 'team')">الفريق المنفذ</button>
+</div>
+
+<div id="home" class="tabcontent">
+  <h3><center>يا أهلا بك في لعبة الذكاء</center></h3>
+  <div class="container">
+    <h1>لعبة تذكر الأرقام</h1>
+    <div id="playerInfo">
+      <label for="playerName"> <strong>اسم اللاعب:</strong></label><br><br>
+      <input type="text" id="playerName">
+      <br><br>
+      <button onclick="startGame()">بدء اللعب</button>
+    </div>
+    <div class="numbers" id="numbersDisplay"></div>
+    <input type="number" id="userGuess" placeholder="أدخل الأرقام التي رأيتها">
+    <br><br>
+    <button id="checkButton" onclick="checkGuess()" style="display:none;">تحقق</button>
+    <div id="result"></div>
+  </div>
+</div>
+
+<div id="statistics" class="tabcontent">
+ 
+  <div class="container">
+    <h1>إحصائيات اللاعبين</h1>
+    <table id="statsTable">
+        <tr>
+            <th>اسم اللاعب</th>
+            <th>عدد الإجابات الصحيحة</th>
+            <th>عدد الإجابات الخاطئة</th>
+            <th>الوقت المستغرق (ثواني)</th>
+        </tr>
+    </table>
+  </div>
+</div>
+
+<div id="team" class="tabcontent">
+  
+  <p> <center> أعضاء الفريق الذين قاموا بتنفيذ هذه اللعبة باشراف الدكتور : .</center></p>
+ <center><b>عبد المهيمن اسماعيل</b></center> <br>
+<center>:الطالبة   </center>
+  <p><center><br>  نور كجك<br></center></p>
+</div>
+
+<script>
+  let correctAnswers = 0;
+  let wrongAnswers = 0;
+  let attempts = 0;
+
+  function openTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+  }
+
+  let startTime; // متغير لتخزين وقت بدء اللعبة
+
+  function startGame() {
+    playerName = document.getElementById('playerName').value;
+    startTime = new Date(); // حفظ وقت بدء اللعبة
+    document.getElementById('playerInfo').style.display = 'none';
+    document.getElementById('numbersDisplay').style.display = 'block'; 
+    document.getElementById('userGuess').style.display = 'block'; 
+    document.getElementById('checkButton').style.display = 'block'; // إظهار زر التحقق
+    document.getElementById('numbersDisplay').textContent = ''; 
+    document.getElementById('result').textContent = '';
+    displayMessage('إبدأ اللعب!');
+    generateNumbers();
+  }
+
+  function generateNumbers() {
+    numbersArray = [];
+    for (let i = 0; i < 4; i++) {
+      numbersArray.push(Math.floor(Math.random() * 10));
+    }
+    document.getElementById('numbersDisplay').textContent = numbersArray.join(' ');
+    setTimeout(() => {
+      document.getElementById('numbersDisplay').textContent = '';
+      document.getElementById('userGuess').focus();
+    }, 1000); 
+  }
+
+  function displayMessage(message) {
+    document.getElementById('result').textContent = message;
+    setTimeout(function() {
+      document.getElementById('result').textContent = '';
+    }, 2000); 
+  }
+
+  let wrongAttempts = 0;
+
+  function checkGuess() {
+    let userGuess = document.getElementById('userGuess').value;
+    let userGuessArray = userGuess.split('');
+    attempts++;
+    if (arraysMatch(numbersArray, userGuessArray)) {
+        correctAnswers++;
+        displayMessage('إجابة صحيحة!');
+        playSound('success');
+        setTimeout(() => {
+            document.getElementById('numbersDisplay').textContent = '';
+        }, 1000); 
+        if (attempts < 20) {
+            setTimeout(() => {
+                generateNumbers();
+                document.getElementById('userGuess').value = '';
+            }, 2000);
+        } else {
+            showStats();
+        }
+    } else {
+        wrongAnswers++;
+        wrongAttempts++;
+        displayMessage('إجابة خاطئة!');
+        playSound('error');
+        if (wrongAttempts < 3) {
+            setTimeout(() => {
+                document.getElementById('numbersDisplay').textContent = '';
+                setTimeout(() => {
+                    document.getElementById('numbersDisplay').textContent = numbersArray.join(' ');
+                    setTimeout(() => {
+                        document.getElementById('numbersDisplay').textContent = '';
+                    }, 1000); 
+                }, 1000); 
+            }, 1000);
+            document.getElementById('userGuess').value = '';
+        } else {
+            displayMessage(`الرقم الصحيح هو: ${numbersArray.join(' ')}`);
+            setTimeout(() => {
+                generateNumbers();
+                document.getElementById('userGuess').value = '';
+                wrongAttempts = 0;
+            }, 2000);
+        }
+        if (attempts >= 20) {
+            showStats();
+        }
+    }
+  }
+
+  function arraysMatch(arr1, arr2) {
+    if (arr1.length !== arr2.length) return false;
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== parseInt(arr2[i])) return false;
+    }
+    return true;
+  }
+
+  function playSound(type) {
+    let audio = new Audio();
+    if (type === 'success') {
+      audio.src = 'success.mp3';
+    } else {
+      audio.src = 'error.mp3';
+    }
+    audio.play();
+  }
+
+  function showStats() {
+    document.getElementById('numbersDisplay').style.display = 'none';
+    document.getElementById('userGuess').style.display = 'none';
+    document.getElementById('result').textContent = '';
+    openTab(event, 'statistics'); 
+
+    let endTime = new Date();
+    let timeDiff = (endTime - startTime) / 1000; 
+    let statsTable = document.getElementById("statsTable");
+    let row = statsTable.insertRow(-1);
+    let playerNameCell = row.insertCell(0);
+    let correctCountCell = row.insertCell(1);
+    let wrongCountCell = row.insertCell(2);
+    let timeCell = row.insertCell(3); 
+    playerNameCell.innerText = playerName;
+    correctCountCell.innerText = correctAnswers;
+    wrongCountCell.innerText = wrongAnswers;
+    timeCell.innerText = timeDiff; 
+
+    // تخزين البيانات في localStorage
+    let playerStats = {
+      playerName: playerName,
+      correctAnswers: correctAnswers,
+      wrongAnswers: wrongAnswers,
+      timeTaken: timeDiff
+    };
+    let allPlayerStats = JSON.parse(localStorage.getItem('playerStats')) || [];
+    allPlayerStats.push(playerStats);
+    localStorage.setItem('playerStats', JSON.stringify(allPlayerStats));
+
+    // إعادة تحميل البيانات من localStorage وتحديث الجدول
+    loadStatsFromStorage();
+  }
+
+  function loadStatsFromStorage() {
+    let allPlayerStats = JSON.parse(localStorage.getItem('playerStats')) || [];
+    let statsTable = document.getElementById("statsTable");
+    statsTable.innerHTML = `
+        <tr>
+            <th>اسم اللاعب</th>
+            <th>عدد الإجابات الصحيحة</th>
+            <th>عدد الإجابات الخاطئة</th>
+            <th>الوقت المستغرق (ثواني)</th>
+        </tr>`;
+    allPlayerStats.forEach(playerStats => {
+      let row = statsTable.insertRow(-1);
+      let playerNameCell = row.insertCell(0);
+      let correctCountCell = row.insertCell(1);
+      let wrongCountCell = row.insertCell(2);
+      let timeCell = row.insertCell(3); 
+      playerNameCell.innerText = playerStats.playerName;
+      correctCountCell.innerText = playerStats.correctAnswers;
+      wrongCountCell.innerText = playerStats.wrongAnswers;
+      timeCell.innerText = playerStats.timeTaken; 
+    });
+  }
+
+  // Load initial stats from localStorage when the page loads
+  loadStatsFromStorage();
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
